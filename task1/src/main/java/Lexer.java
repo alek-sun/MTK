@@ -17,7 +17,7 @@ public class Lexer {
         }
         StringBuilder builder = new StringBuilder();
         while (Character.isDigit(cur)){
-            builder.append(cur);
+            builder.append((char)cur);
             cur = reader.read();
         }
         String lexemStr = builder.toString();
