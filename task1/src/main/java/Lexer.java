@@ -45,6 +45,14 @@ public class Lexer {
                 cur = reader.read();
                 return new Lexem("^", LexemType.POW);
             }
+            case '(' : {
+                cur = reader.read();
+                return new Lexem("(", LexemType.OPEN_BRACKET);
+            }
+            case ')' : {
+                cur = reader.read();
+                return new Lexem(")", LexemType.CLOSE_BRACKET);
+            }
             case -1 : {
                 return new Lexem("", LexemType.EOF);
             }
