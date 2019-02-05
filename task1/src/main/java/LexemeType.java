@@ -1,3 +1,3 @@
-public enum LexemType {
+public enum LexemeType {
     MINUS, PLUS, MUL, DIV, POW, EOF, NUMBER, OPEN_BRACKET, CLOSE_BRACKET
 }

@@ -2,41 +2,55 @@ import java.io.IOException;
 
 public class Parser {
     Lexer lexer;
-    Lexem curLexem;
+    Lexeme curLexeme;
+    int openedBracket;
+    int closedBracket;
 
     public Parser(Lexer lexer) throws LexerException, IOException {
         this.lexer = lexer;
-        curLexem = lexer.getLexem();
+        openedBracket = 0;
+        closedBracket = 0;
+        curLexeme = lexer.getLexeme();
     }
 
-    public void calculateExpression() throws LexerException, IOException {
-        while (curLexem.type != LexemType.EOF){
-            System.out.println("Res = " + parseExpression());
+    public int calculateExpression() throws LexerException, IOException {
+        int res = -1;
+        while (curLexeme.type != LexemeType.EOF){
+            res = parseExpression();
+            if (openedBracket != closedBracket) {
+                throw new LexerException("Bracket state error");
+            }
+            System.out.println("Res = " + res);
         }
+        return res;
     }
 
     private int parseExpression() throws LexerException, IOException {
         int temp = parseTerm();
-        while (curLexem.type == LexemType.PLUS
-                || curLexem.type == LexemType.MINUS){
+        while (curLexeme.type == LexemeType.PLUS
+                || curLexeme.type == LexemeType.MINUS){
             int sgn;
-            if (curLexem.type == LexemType.PLUS){
+            if (curLexeme.type == LexemeType.PLUS){
                 sgn = 1;
             } else {
                 sgn = -1;
             }
-            curLexem = lexer.getLexem();
+            curLexeme = lexer.getLexeme();
             temp += parseTerm() * sgn;
+        }
+        if (curLexeme.type == LexemeType.CLOSE_BRACKET){
+            closedBracket++;
+            curLexeme = lexer.getLexeme();
         }
         return temp;
     }
 
     private int parseTerm() throws LexerException, IOException {
         int temp = parseFactor();
-        while (curLexem.type == LexemType.MUL || curLexem.type == LexemType.DIV){
-            Lexem buf = curLexem;
-            curLexem = lexer.getLexem();
-            if (buf.type == LexemType.MUL){
+        while (curLexeme.type == LexemeType.MUL || curLexeme.type == LexemeType.DIV){
+            Lexeme buf = curLexeme;
+            curLexeme = lexer.getLexeme();
+            if (buf.type == LexemeType.MUL){
                 temp *= parseFactor();
             } else {
                 temp /= parseFactor();
@@ -47,28 +61,33 @@ public class Parser {
 
     private int parseFactor() throws LexerException, IOException {
         int temp = parsePower();
-        if (curLexem.type == LexemType.POW){
-            curLexem = lexer.getLexem();
+        if (curLexeme.type == LexemeType.POW){
+            curLexeme = lexer.getLexeme();
             return (int) Math.pow(temp, parseFactor());
         }
         return temp;
     }
 
     private int parseAtom() throws LexerException, IOException {
-        if (curLexem.type == LexemType.NUMBER){
-            int value = Integer.parseInt(curLexem.str);
-            curLexem = lexer.getLexem();
+        if (curLexeme.type == LexemeType.NUMBER){
+            int value = Integer.parseInt(curLexeme.str);
+            curLexeme = lexer.getLexeme();
             return value;
-        } else if (curLexem.type == LexemType.OPEN_BRACKET){
-            curLexem = lexer.getLexem();
+        } else if (curLexeme.type == LexemeType.OPEN_BRACKET){
+            openedBracket++;
+            curLexeme = lexer.getLexeme();
             return parseExpression();
+        } else if (curLexeme.type == LexemeType.CLOSE_BRACKET){
+            closedBracket++;
+            curLexeme = lexer.getLexeme();
+            return 0;
+        } else {
+            throw new LexerException("Parser : unexpected char");
         }
-
-        return 0; ////////////////
     }
 
     private int parsePower() throws LexerException, IOException {
-        if (curLexem.type == LexemType.MINUS) {
+        if (curLexeme.type == LexemeType.MINUS) {
             return parseAtom() * -1;
         } else {
             return parseAtom();

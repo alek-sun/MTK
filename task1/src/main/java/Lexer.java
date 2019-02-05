@@ -10,8 +10,7 @@ public class Lexer {
         cur = reader.read();
     }
 
-
-    Lexem getLexem() throws LexerException, IOException {
+    Lexeme getLexeme() throws LexerException, IOException {
         while (cur == ' '){
             cur = reader.read();
         }
@@ -20,41 +19,41 @@ public class Lexer {
             builder.append((char)cur);
             cur = reader.read();
         }
-        String lexemStr = builder.toString();
-        if (!lexemStr.equals("")){
-            return new Lexem(lexemStr, LexemType.NUMBER);
+        String lexemeStr = builder.toString();
+        if (!lexemeStr.equals("")){
+            return new Lexeme(lexemeStr, LexemeType.NUMBER);
         }
         switch (cur){
             case '-' : {
                 cur = reader.read();
-                return new Lexem("-", LexemType.MINUS);
+                return new Lexeme("-", LexemeType.MINUS);
             }
             case '+' : {
                 cur = reader.read();
-                return new Lexem("+", LexemType.PLUS);
+                return new Lexeme("+", LexemeType.PLUS);
             }
             case '*' : {
                 cur = reader.read();
-                return new Lexem("*", LexemType.MUL);
+                return new Lexeme("*", LexemeType.MUL);
             }
             case '/' : {
                 cur = reader.read();
-                return new Lexem("/", LexemType.DIV);
+                return new Lexeme("/", LexemeType.DIV);
             }
             case '^' : {
                 cur = reader.read();
-                return new Lexem("^", LexemType.POW);
+                return new Lexeme("^", LexemeType.POW);
             }
             case '(' : {
                 cur = reader.read();
-                return new Lexem("(", LexemType.OPEN_BRACKET);
+                return new Lexeme("(", LexemeType.OPEN_BRACKET);
             }
             case ')' : {
                 cur = reader.read();
-                return new Lexem(")", LexemType.CLOSE_BRACKET);
+                return new Lexeme(")", LexemeType.CLOSE_BRACKET);
             }
             case -1 : {
-                return new Lexem("", LexemType.EOF);
+                return new Lexeme("", LexemeType.EOF);
             }
             default:
                 throw new LexerException("Unexpected char");

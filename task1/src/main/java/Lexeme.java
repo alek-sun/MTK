@@ -1,10 +1,10 @@
 import java.util.Objects;
 
-public class Lexem {
+public class Lexeme {
     String str;
-    LexemType type;
+    LexemeType type;
 
-    public Lexem(String str, LexemType type) {
+    public Lexeme(String str, LexemeType type) {
         this.str = str;
         this.type = type;
     }
@@ -13,9 +13,9 @@ public class Lexem {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Lexem lexem = (Lexem) o;
-        return Objects.equals(str, lexem.str) &&
-                type == lexem.type;
+        Lexeme lexeme = (Lexeme) o;
+        return Objects.equals(str, lexeme.str) &&
+                type == lexeme.type;
     }
 
     @Override
