@@ -33,6 +33,7 @@ public class TestParser {
                 { "6/2*3", 9 },
                 { "6/(2*3)", 1 },
                 { "24/(2*3+2)", 3 },
+                {"5*(2-1)        *(6+2)-1", 39}
         };
         return Arrays.asList(data);
     }
