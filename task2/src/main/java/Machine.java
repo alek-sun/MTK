@@ -1,26 +1,68 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 public class Machine {
-    Integer curState;
-    Integer readedCount;
-    ArrayList<Integer> finalStates;
     Map<Integer, Map<Character, Integer>> rules;
-    String input;
+    BufferedReader autoInput;
+    BufferedReader inputSequence;
+    List<Integer> finalStates;
+    Integer startState;
 
 
-    Machine(Map<Integer, Map<Character, Integer>> rules, ArrayList<Integer> finalStates, String input){
-        readedCount = 0;
-        curState = 0;
-        this.finalStates = finalStates;
-        this.rules = rules;
-        this.input = input;
+    Machine(String rulesFileName, String sequenceFileName, Integer startState) throws FileNotFoundException {
+        autoInput = new BufferedReader(new FileReader(new File(rulesFileName)));
+        inputSequence = new BufferedReader(new FileReader(new File(sequenceFileName)));
+        finalStates = new ArrayList<>();
+        this.startState = startState;
+        rules = new HashMap<>();
     }
 
     boolean run() throws IOException {
+        parseFinalStates();
+        parseRules();
+
+        String machineLine = inputSequence.readLine();
+        BufferedReader reader = new BufferedReader(new StringReader(machineLine));
+        Character s;
+        Integer curState = startState;
+        int c;
+
+        while ((c  = reader.read()) != -1){
+            s = (char) c;
+            curState = rules.get(curState).get(s);
+        }
+        return finalStates.contains(curState);
+    }
+
+    private void parseRules() throws IOException {
+        String cur;
+        String curState = startState.toString();
+        Map<Character, Integer> transition = new HashMap<>();
+
+        while ((cur = autoInput.readLine()) != null){
+            String[] stateChar = cur.split(" ");
+
+            if (!stateChar[0].equals(curState)){
+                rules.put(Integer.parseInt(curState), transition);
+                transition = new HashMap<>();
+            }
+            transition.put(stateChar[1].charAt(0), Integer.parseInt(stateChar[2]));
+            curState = stateChar[0];
+        }
+        rules.put(Integer.parseInt(curState), transition);
+    }
+
+    private void parseFinalStates() throws IOException {
+        String finalStatesStr = autoInput.readLine();
+        String[] statesArr = finalStatesStr.split(" ");
+        for (String s : statesArr
+        ) {
+            finalStates.add(Integer.parseInt(s));
+        }
+    }
+
+
+   /* boolean run() throws IOException {
         BufferedReader reader = new BufferedReader(new StringReader(input));
         Character s;
         int c;
@@ -32,5 +74,5 @@ public class Machine {
             return true;
         }
         return false;
-    }
+    }*/
 }
